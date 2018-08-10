@@ -94,18 +94,48 @@ while true
         
         desc_dir = problem.M.transp(x, newx, desc_dir);
         
-        diff = lincomb(newx, 1, newgrad, -1, oldgrad);
-        ip_diff = inner(newx, Pnewgrad, diff);
-        beta = ip_diff / inner(newx, diff, desc_dir);
-        beta = max(0, beta);
-        
+        if strcmp(options.beta_type, 'F-R')  % Fletcher-Reeves
+            beta = newgradPnewgrad / gradPgrad;
+            
+        elseif strcmp(options.beta_type, 'P-R')  % Polak-Ribiere+
+            % vector grad(new) - transported grad(current)
+            diff = lincomb(newx, 1, newgrad, -1, oldgrad);
+            ip_diff = inner(newx, Pnewgrad, diff);
+            beta = ip_diff/gradPgrad;
+            beta = max(0, beta);
+            
+        elseif strcmp(options.beta_type, 'H-S')  % Hestenes-Stiefel+
+            diff = lincomb(newx, 1, newgrad, -1, oldgrad);
+            ip_diff = inner(newx, Pnewgrad, diff);
+            beta = ip_diff / inner(newx, diff, desc_dir);
+            beta = max(0, beta);
+            
+        elseif strcmp(options.beta_type, 'H-Z') % Hager-Zhang+
+            diff = lincomb(newx, 1, newgrad, -1, oldgrad);
+            Poldgrad = problem.M.transp(x, newx, Pgrad);
+            Pdiff = lincomb(newx, 1, Pnewgrad, -1, Poldgrad);
+            deno = inner(newx, diff, desc_dir);
+            numo = inner(newx, diff, Pnewgrad);
+            numo = numo - 2*inner(newx, diff, Pdiff)*...
+                inner(newx, desc_dir, newgrad)/deno;
+            beta = numo/deno;
+            
+            % Robustness (see Hager-Zhang paper mentioned above)
+            desc_dir_norm = problem.M.norm(newx, desc_dir);
+            eta_HZ = -1/(desc_dir_norm * min(0.01, gradnorm));
+            beta = max(beta,  eta_HZ);
+            
+        else
+            error(['Unknown options.beta_type. ' ...
+                'Should be steep, S-D, F-R, P-R, H-S or H-Z.']);
+        end
         desc_dir = lincomb(newx, -1, Pnewgrad, beta, desc_dir);
     end
     
     
     
     % Make sure we don't use too much memory for the store database.
-   % storedb = purgeStoredb(storedb, options.storedepth);
+    storedb = purgeStoredb(storedb, options.storedepth);
     
     % Update iterate info
     x = newx;
@@ -123,6 +153,34 @@ while true
     %     info(iter+1) = stats; %#ok<AGROW>
     
 end
+
+
+% info = info(1:iter+1);
+
+% if options.verbosity >= 1
+%     % fprintf('Total time is %f [s] (excludes statsfun)\n', info(end).time);
+% end
+
+
+% Routine in charge of collecting the current iteration stats
+%     function stats = savestats()
+%         stats.iter = iter;
+%         stats.cost = cost;
+%         stats.gradnorm = gradnorm;
+%         if iter == 0
+%             stats.stepsize = nan;
+%             stats.time = 0;
+%             stats.linesearch = [];
+%             stats.beta = 0;
+%         else
+%             stats.stepsize = stepsize;
+%             stats.time = info(iter).time + toc(timetic);
+%             stats.linesearch = lsstats;
+%             stats.beta = beta;
+%         end
+%         stats = applyStatsfun(problem, x, storedb, options, stats);
+%     end
+
 end
 
 

@@ -26,7 +26,7 @@ Metric.mse = true;
 Metric.ber = true;
 
 global N_loop;
-N_loop = 10;   %iteration number
+N_loop = 100;   %iteration number
 A_num = 1; %number of all algortihms
 
 % state noise power and channel as global variables to
