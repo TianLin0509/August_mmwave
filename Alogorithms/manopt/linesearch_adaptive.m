@@ -1,5 +1,5 @@
-function [stepsize newx storedb lsmem lsstats] = ...
-       linesearch_adaptive(problem, x, d, f0, df0, options, storedb, lsmem)
+function [stepsize, newx  ,lsmem ,lsstats] = ...
+       linesearch_adaptive(problem, x, d, f0, df0, options, lsmem)
 % Adaptive line search algorithm (step size selection) for descent methods.
 %
 % function [stepsize newx storedb lsmem lsstats] = 
@@ -63,7 +63,7 @@ function [stepsize newx storedb lsmem lsstats] = ...
 
     % Make the chosen step and compute the cost there.
     newx = problem.M.retr(x, d, alpha);
-    [newf storedb] = getCost(problem, newx, storedb);
+    newf  = problem.cost(newx);
     cost_evaluations = 1;
     
     % Backtrack while the Armijo criterion is not satisfied
@@ -74,7 +74,7 @@ function [stepsize newx storedb lsmem lsstats] = ...
         
         % and look closer down the line
         newx = problem.M.retr(x, d, alpha);
-        [newf storedb] = getCost(problem, newx, storedb);
+         newf  = problem.cost(newx);
         cost_evaluations = cost_evaluations + 1;
         
         % Make sure we don't run out of budget

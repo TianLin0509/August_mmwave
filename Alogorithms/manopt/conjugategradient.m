@@ -1,8 +1,8 @@
 function [x, cost, options] = conjugategradient(problem, x)
 
-options.minstepsize = 1e-5;
-options.maxiter = 50;
-options.tolgradnorm = 1e-5;
+options.minstepsize = 1e-4;
+options.maxiter = 20;
+options.tolgradnorm = 1e-4;
 options.storedepth = 2;
 options.beta_type = 'H-S';
 options.orth_value = Inf;
@@ -12,8 +12,6 @@ options.linesearch = @linesearch_adaptive;
 inner = problem.M.inner;
 lincomb = problem.M.lincomb;
 
-% Create a store database
-storedb = struct();
 
 % If no initial point x is given by the user, generate one at random.
 if ~exist('x', 'var') || isempty(x)
@@ -21,7 +19,7 @@ if ~exist('x', 'var') || isempty(x)
 end
 
 % Compute objective-related quantities for x
-[cost grad storedb] = getCostGrad(problem, x, storedb);
+[cost,grad] = getCostGrad(problem, x);
 gradnorm = problem.M.norm(x, grad);
 
 Pgrad = grad;
@@ -62,24 +60,16 @@ while true
     end
     
     % Execute line search
-    [stepsize newx storedb lsmem lsstats] = options.linesearch(...
-        problem, x, desc_dir, cost, df0, options, storedb, lsmem);
+    [stepsize newx lsmem lsstats] = options.linesearch(...
+        problem, x, desc_dir, cost, df0, options, lsmem);
     
     
     % Compute the new cost-related quantities for x
-    [newcost newgrad storedb] = getCostGrad(problem, newx, storedb);
+    [newcost newgrad] = getCostGrad(problem, newx);
     newgradnorm = problem.M.norm(newx, newgrad);
     Pnewgrad = newgrad;
     newgradPnewgrad = inner(newx, newgrad, Pnewgrad);
     
-    
-    % Apply the CG scheme to compute the next search direction.
-    %
-    % This paper https://www.math.lsu.edu/~hozhang/papers/cgsurvey.pdf
-    % by Hager and Zhang lists many known beta rules. The rules defined
-    % here can be found in that paper (or are provided with additional
-    % references), adapted to the Riemannian setting.
-    %
     
     oldgrad = problem.M.transp(x, newx, grad);
     orth_grads = inner(newx, oldgrad, Pnewgrad)/newgradPnewgrad;
@@ -118,9 +108,6 @@ while true
     % iter is the number of iterations we have accomplished.
     iter = iter + 1;
     
-    % Log statistics for freshly executed iteration
-    %     stats = savestats();
-    %     info(iter+1) = stats; %#ok<AGROW>
     
 end
 end

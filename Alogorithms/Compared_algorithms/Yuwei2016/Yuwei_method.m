@@ -2,7 +2,7 @@ function [obj] = Yuwei_method(obj)
 % the YUWEI algorithm for both narrowband and broadband
 % cite the paper Hybrid digital and analog beamforming design for large-scale antenna arrays
 global Ns  H Vn ;
-
+t1 = clock;
 [Nk]  = size(H,3);
 V_RF = yuweiA1();
 Q = (V_RF'*V_RF);
@@ -24,6 +24,9 @@ for k = 1:Nk
 end
 
 %save datas
+t2 = clock;
+runtime  = etime(t2,t1);
+obj.runtime = obj.runtime + runtime;
 obj.V_B = V_D;
 obj.W_B = W_D;
 obj.V_RF = V_RF;

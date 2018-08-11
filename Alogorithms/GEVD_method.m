@@ -3,7 +3,7 @@ function [obj] = GEVD_method(obj)
 %the proposed GEVD-HBF scheme
 
 global H Vn  Nrf Nt Nr W_mopt;
-
+t1 = clock;
 i = 0;   %itertion index
 
 %just to achieve W_RF*W_D = W_mopt
@@ -17,7 +17,7 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while (trigger > 1e-4 && i<10)
+while (trigger > 1e-5 && i<10)
     
     % precoding
     H1 = H' * W_equal;
@@ -41,7 +41,9 @@ while (trigger > 1e-4 && i<10)
 end
 
 V_B = V_U / sqrt(v);
-
+t2 = clock;
+runtime  = etime(t2,t1);
+obj.runtime = obj.runtime + runtime;
 obj.V_B = V_B;
 obj.W_B = W_B;
 obj.V_RF = V_RF;

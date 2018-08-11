@@ -7,6 +7,7 @@ global Nsym N_loop Ns;
             
             obj.Ber = sum(obj.ber)/(2*N_loop*Nsym*Ns);
             
+            obj.runtime = etime(time_end,time_begin);
             
             disp(['Rate: ', num2str(real(obj.Rate))]);
             
@@ -14,6 +15,6 @@ global Nsym N_loop Ns;
             
             disp(['Ber: ',num2str(obj.Ber)]);
             
-            disp(['Total Time: ' num2str(obj.runtime)]);
+            disp(['Total Time: 'num2str(obj.runtime)];
             
             disp(' ');

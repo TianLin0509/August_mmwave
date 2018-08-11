@@ -1,6 +1,7 @@
 function [obj] = OMP_method(obj)
 
 global Ns Nrf H Vn W_mopt Codebook_v Codebook_w;
+t1 = clock;
 n = 1;   %number of iterCodebook_vion
 MSE =zeros(1,11);
 W_D = W_mopt;  %initializCodebook_vion
@@ -24,7 +25,9 @@ while(n<3 || (MSE(n-2)-MSE(n-1))>1e-4 &&n<=10)
 end
 V_D = V_D/sqrt(tv);
 %W_B = W_D*sqrt(tv);
-
+t2 = clock;
+runtime  = etime(t2,t1);
+obj.runtime = obj.runtime + runtime;
 obj.V_B = V_D;
 obj.W_B = W_D;
 obj.V_RF = V_RF;

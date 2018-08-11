@@ -26,7 +26,7 @@ Metric.mse = true;
 Metric.ber = true;
 
 global N_loop;
-N_loop = 100;   %iteration number
+N_loop = 20;   %iteration number
 A_num = 1; %number of all algortihms
 
 % state noise power and channel as global variables to
@@ -42,10 +42,10 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 
 %Algorithms, use cell to save different algorithms to run
-%Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'OMP', 'JZMO'};
-Algorithms  = {'Mrate','JZMO'};
+Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'OMP', 'JZMO'};
+%Algorithms  = {'MMSE','GEVD'};
 for i = 1 : length(Algorithms)
-    eval([Algorithms{i},'=Init_struct();']);
+    eval([Algorithms{i},'=Init_struct(i);']);
 end
 
 %global initialization (optimal based on MMSE or rate)
@@ -67,7 +67,7 @@ for snr_index = 1 : length(SNR_dB)
         end
        
         if (n==10)
-            mytoc(N_loop,t1);
+            mytoc(t1);
         end
     end
     

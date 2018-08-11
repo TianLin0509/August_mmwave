@@ -44,8 +44,8 @@ function [obj] = MMSE_method(obj)
    
    %% save results  
    t2 = clock;
-   runtime  = etime(t2,t1);
+   run_time  = etime(t2,t1);
    obj.V_B = V_mopt;
    obj.W_B = W_mopt;
-   obj.runtime = obj.runtime + runtime;
+   obj.run_time = 
    obj = get_metric(obj);

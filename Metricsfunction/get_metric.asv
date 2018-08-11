@@ -2,15 +2,10 @@ function obj = get_metric(obj)
 
 %initialization
 % the FD case
-global Metric n N_loop;
+global Metric n;
 
 if n==1 
-    obj.time_begin = clock;
-end
-
-if n == N_loop
-    obj.time_end = clock;
-end
+    eval(['algorithm'obj.index 
 
  if obj.V_RF == 0
     V_equal = obj.V_B;
