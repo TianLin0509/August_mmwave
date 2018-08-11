@@ -1,6 +1,7 @@
 function [V_RF, V_U] = gevd_algorithm(V_RF, w, H1)
 
-global Nt Ns  Nrf Vn;
+global Ns  Nrf Vn;
+Nt = size(V_RF,1);
 theta = 1/(Vn * w * Nt);  % for simplification
 
 for m = 1: 4  %outer iteration

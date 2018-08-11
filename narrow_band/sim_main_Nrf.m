@@ -9,7 +9,7 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. Nrf
-Nrf_region = (2:6);
+Nrf_region = (4:8);
 SNR_dB = -20;
 
 %numbers of antennas, streams, RF chains, block
@@ -17,7 +17,7 @@ global Nt Nr Ns Nrf Nsym;   %all functions can use these paras without passing
 Nt = 64;
 Nr = 64;
 
-Ns = 2;
+Ns = 4;
 Nsym = 64;
 
 global Metric;
@@ -27,7 +27,7 @@ Metric.mse = true;
 Metric.ber = true;
 
 global N_loop;
-N_loop = 30;   %iteration number
+N_loop = 500;   %iteration number
 
 % state noise power and channel as global variables to
 % avoid parameters passing

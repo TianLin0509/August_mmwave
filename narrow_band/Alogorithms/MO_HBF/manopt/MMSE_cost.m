@@ -1,6 +1,7 @@
 function cost = MMSE_cost(x,H1,Vn)
 
-global Nrf Nr Ns;
+global Nrf  Ns;
+Nr = size(H1,1);
 
 x = reshape(x,Nr,Nrf);
 

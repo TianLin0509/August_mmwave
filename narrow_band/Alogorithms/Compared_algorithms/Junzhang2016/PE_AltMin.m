@@ -1,6 +1,7 @@
 function [ FRF,FBB ] = PE_AltMin( Fopt )
 
-global Nt Ns Nrf; 
+global  Ns Nrf; 
+Nt = size(Fopt,1);
 mynorm = [];
 FRF = exp( sqrt(-1) * unifrnd (0,2*pi,Nt,Nrf) );
 while (isempty(mynorm) || abs( mynorm(end) - mynorm(end-1) ) > 1e-4)
