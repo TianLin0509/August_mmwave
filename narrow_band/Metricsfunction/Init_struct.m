@@ -1,7 +1,7 @@
-function obj = Init_struct(i)
+function obj = Init_struct(name)
 %just a zero initialization
 global N_loop;
-obj.index = num2str(i);
+obj.Name = name;
 obj.V_B = 0;
 obj.W_B = 0;
 obj.V_RF = 0;

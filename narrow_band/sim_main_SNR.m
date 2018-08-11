@@ -8,6 +8,7 @@ clear all;  close all; clc;
 disp(datestr(now));
 
 % set up simulation parameters;
+%this .m is for BER,MSE,rate v.s. SNR
 SNR_dB = (-22:2:-20);
 
 %numbers of antennas, streams, RF chains, block
@@ -27,7 +28,6 @@ Metric.ber = true;
 
 global N_loop;
 N_loop = 20;   %iteration number
-A_num = 1; %number of all algortihms
 
 % state noise power and channel as global variables to
 % avoid parameters passing
@@ -44,8 +44,12 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 %Algorithms, use cell to save different algorithms to run
 Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'OMP', 'JZMO','MO'};
 %Algorithms  = {'MMSE','MO'};
+
+%simulation results cell
+total_datas = cell(length(SNR_dB),length(Algorithms));
+
 for i = 1 : length(Algorithms)
-    eval([Algorithms{i},'=Init_struct(i);']);
+    eval([Algorithms{i},'=Init_struct(Algorithms{i});']);
 end
 
 %global initialization (optimal based on MMSE or rate)
@@ -62,22 +66,23 @@ for snr_index = 1 : length(SNR_dB)
         
         % generate channel matrix, codebooks for OMP
         [H ,Codebook_v, Codebook_w]  = OMPH(Nt,Nr);
-
+        
         %run different algorithms
         for i = 1:length(Algorithms)
             eval([Algorithms{i},'=',Algorithms{i},'_method(',Algorithms{i},');']);
         end
-       
+        
         if (n==10)
             mytoc(t1);
         end
     end
     
-   
+    
     for i = 1:length(Algorithms)
-          disp(['AlgorithmName: ',Algorithms{i}]);
         eval(['Show(',Algorithms{i},');']);
+        eval(['total_datas{snr_index,i}=',Algorithms{i},';']);
     end
+    
     disp(datestr(now));
 end
 

@@ -17,7 +17,7 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while (trigger > 1e-5 && i<10)
+while (trigger > 1e-4 && i<10)
     
     % precoding
     H1 = H' * W_equal;

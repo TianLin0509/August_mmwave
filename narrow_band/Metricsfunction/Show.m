@@ -1,4 +1,4 @@
-function Show(obj)
+function info = Show(obj)
 global Nsym N_loop Ns;
             
             obj.Rate =  sum(obj.rate)/N_loop;
@@ -7,6 +7,7 @@ global Nsym N_loop Ns;
             
             obj.Ber = sum(obj.ber)/(2*N_loop*Nsym*Ns);
             
+            disp(['Name: ', obj.Name]);
             
             disp(['Rate: ', num2str(real(obj.Rate))]);
             
