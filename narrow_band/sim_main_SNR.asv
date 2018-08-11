@@ -27,7 +27,7 @@ Metric.mse = true;
 Metric.ber = true;
 
 global N_loop;
-N_loop = 50;   %iteration number
+N_loop = 5;   %iteration number
 
 % state noise power and channel as global variables to
 % avoid parameters passing
@@ -42,7 +42,7 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 
 %Algorithms, use cell to save different algorithms to run
-Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'JZMO','MO'};
+Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'OMP', 'JZMO','MO'};
 %Algorithms  = {'MMSE','MO'};
 
 %simulation results cell
@@ -57,21 +57,15 @@ global  V_mopt W_mopt V_ropt W_ropt ;
 global manifold;
 manifold = complexcirclefactory(Nt*Nrf);
 
-%fixed channel
-H_fixed = gen_H(Nt,Nr,N_loop);
-
-fprintf('params: \n Nt: %d  Nr: %d  Ns: %d N_loop: %d Nrf: %d \n SNR: %d : %d \n',...
-    Nt,Nr,Ns,N_loop,Nrf,SNR_dB(1),SNR_dB(end));
-
 for snr_index = 1 : length(SNR_dB)
+    Nrf =
     Vn = 1 / 10^(SNR_dB(snr_index)/10);   % Noise Power
     t1 = clock;
     
     for  n = 1 : N_loop
         
         % generate channel matrix, codebooks for OMP
-        %[H ,Codebook_v, Codebook_w]  = OMPH(Nt,Nr);
-        H = H_fixed(:,:,n);
+        [H ,Codebook_v, Codebook_w]  = OMPH(Nt,Nr);
         
         %run different algorithms
         for i = 1:length(Algorithms)

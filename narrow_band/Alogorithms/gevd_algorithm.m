@@ -3,7 +3,7 @@ function [V_RF, V_U] = gevd_algorithm(V_RF, w, H1)
 global Nt Ns  Nrf Vn;
 theta = 1/(Vn * w * Nt);  % for simplification
 
-for m = 1: 2  %outer iteration
+for m = 1: 4  %outer iteration
     for j = 1: Nrf
         V_m = V_RF;
         V_m(:,j) = [];

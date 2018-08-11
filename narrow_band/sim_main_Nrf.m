@@ -8,8 +8,9 @@ clear all;  close all; clc;
 disp(datestr(now));
 
 % set up simulation parameters;
-%this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-22:2:-20);
+%this .m is for BER,MSE,rate v.s. Nrf
+Nrf_region = (2:6);
+SNR_dB = -20;
 
 %numbers of antennas, streams, RF chains, block
 global Nt Nr Ns Nrf Nsym;   %all functions can use these paras without passing
@@ -17,7 +18,6 @@ Nt = 64;
 Nr = 64;
 
 Ns = 2;
-Nrf = 2;
 Nsym = 64;
 
 global Metric;
@@ -27,13 +27,13 @@ Metric.mse = true;
 Metric.ber = true;
 
 global N_loop;
-N_loop = 50;   %iteration number
+N_loop = 30;   %iteration number
 
 % state noise power and channel as global variables to
 % avoid parameters passing
 
 global Vn H Codebook_v Codebook_w n;
-
+Vn = 1 / 10^(SNR_dB/10);   % Noise Power
 %using QPSK modulation
 global hMod hDemod;
 
@@ -42,11 +42,11 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 
 %Algorithms, use cell to save different algorithms to run
-Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'JZMO','MO'};
+Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' , 'JZMO','MO'};
 %Algorithms  = {'MMSE','MO'};
 
 %simulation results cell
-total_datas = cell(length(SNR_dB),length(Algorithms));
+total_datas = cell(length(Nrf_region),length(Algorithms));
 
 for i = 1 : length(Algorithms)
     eval([Algorithms{i},'=Init_struct(Algorithms{i});']);
@@ -59,12 +59,13 @@ manifold = complexcirclefactory(Nt*Nrf);
 
 %fixed channel
 H_fixed = gen_H(Nt,Nr,N_loop);
+%load('H_fixed.mat')
 
-fprintf('params: \n Nt: %d  Nr: %d  Ns: %d N_loop: %d Nrf: %d \n SNR: %d : %d \n',...
-    Nt,Nr,Ns,N_loop,Nrf,SNR_dB(1),SNR_dB(end));
+fprintf('params: \n Nt: %d  Nr: %d  Ns: %d N_loop: %d SNR: %d \n Nrf: %d : %d \n',...
+    Nt,Nr,Ns,N_loop,SNR_dB,Nrf_region(1),Nrf_region(end));
 
-for snr_index = 1 : length(SNR_dB)
-    Vn = 1 / 10^(SNR_dB(snr_index)/10);   % Noise Power
+for RF_index = 1 : length(Nrf_region)
+    Nrf = Nrf_region(RF_index);
     t1 = clock;
     
     for  n = 1 : N_loop
@@ -86,13 +87,13 @@ for snr_index = 1 : length(SNR_dB)
     
     for i = 1:length(Algorithms)
         eval([Algorithms{i},'=Show(',Algorithms{i},');']);
-        eval(['total_datas{snr_index,i}=',Algorithms{i},';']);
+        eval(['total_datas{RF_index,i}=',Algorithms{i},';']);
     end
     
     disp(datestr(now));
 end
 
 %plot figures for different metrics
-%simulation_plot(total_datas,SNR_dB, Algorithms);
+simulation_plot(total_datas,Nrf_region, Algorithms);
 
 
