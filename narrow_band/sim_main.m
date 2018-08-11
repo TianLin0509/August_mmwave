@@ -42,14 +42,16 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 
 %Algorithms, use cell to save different algorithms to run
-Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'OMP', 'JZMO'};
-%Algorithms  = {'MMSE','GEVD'};
+Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'OMP', 'JZMO','MO'};
+%Algorithms  = {'MMSE','MO'};
 for i = 1 : length(Algorithms)
     eval([Algorithms{i},'=Init_struct(i);']);
 end
 
 %global initialization (optimal based on MMSE or rate)
 global  V_mopt W_mopt V_ropt W_ropt ;
+global manifold;
+manifold = complexcirclefactory(Nt*Nrf);
 
 for snr_index = 1 : length(SNR_dB)
     
