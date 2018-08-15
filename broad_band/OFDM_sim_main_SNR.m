@@ -8,7 +8,7 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-22:2:-20);
+SNR_dB = (-25:5:-15);
 
 %numbers of antennas, streams, RF chains, sub_carriers
 global Nt Nr Ns Nrf  Nk;   %all functions can use these paras without passing
@@ -42,7 +42,7 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 %Algorithms, use cell to save different algorithms to run
 %Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'JZMO','MO'};
-Algorithms  = {'MMSE','Mrate','EVD'};
+Algorithms  = {'MMSE','Mrate','MO','EVD','Yuwei','JZMO'};
 
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
@@ -92,6 +92,6 @@ for snr_index = 1 : length(SNR_dB)
 end
 
 %plot figures for different metrics
-%simulation_plot(total_datas,SNR_dB, Algorithms);
+simulation_plot(total_datas,SNR_dB, Algorithms);
 
 

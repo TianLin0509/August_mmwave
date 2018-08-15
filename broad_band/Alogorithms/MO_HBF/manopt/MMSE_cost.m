@@ -1,9 +1,11 @@
-function cost = MMSE_cost(x,H1,Vn)
+function cost = MMSE_cost(x,H,Vn)
 
-global Nrf Nr Ns;
+global Nrf  Ns Nk;
+Nr = size(H,1);
 
 x = reshape(x,Nr,Nrf);
 
-cost = trace((H1'*x*(x'*x)^(-1)*x'*H1/Vn+eye(Ns))^(-1));
-
+for i = 1:Nk
+    cost(i) = trace((H(:,:,i)'*x*(x'*x)^(-1)*x'*H(:,:,i)/Vn(i)+eye(Ns))^(-1));
 end
+cost = sum(cost);

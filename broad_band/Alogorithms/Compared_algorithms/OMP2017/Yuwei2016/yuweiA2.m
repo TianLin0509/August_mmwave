@@ -1,8 +1,8 @@
 function W_RF  = yuweiA2(V_D,V_RF)
 
-global Vn H Nrf Nr Nk;
+global Vn H Nrf Nr;
 W_RF = ones(Nr,Nrf);
-
+Nk = size(H,3);
 for k = 1:Nk
     F(:,:,k) = H(:,:,k)*V_RF*V_D(:,:,k)*V_D(:,:,k)'*V_RF'*H(:,:,k)';
 end

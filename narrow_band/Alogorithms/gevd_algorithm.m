@@ -4,7 +4,7 @@ global Ns  Nrf Vn;
 Nt = size(V_RF,1);
 theta = 1/(Vn * w * Nt);  % for simplification
 
-for m = 1: 4  %outer iteration
+for m = 1: 2  %outer iteration
     for j = 1: Nrf
         V_m = V_RF;
         V_m(:,j) = [];

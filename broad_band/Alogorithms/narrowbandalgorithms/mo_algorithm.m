@@ -1,13 +1,17 @@
 function [V_RF, V_U] = mo_algorithm(V_RF, Vn, H1)
 
-global manifold;
+global manifold Ns Nk;
 [Nt, Nrf] = size(V_RF);
+V_U = zeros(Nrf,Ns,Nk);
 problem.M = manifold;
 
 problem.cost = @(x)MMSE_cost(x,H1,Vn);
 problem.egrad = @(x)MMSE_egrad(x,H1,Vn);
 
-[x,cost] = conjugategradient(problem,V_RF(:));
+[x] = conjugategradient(problem,V_RF(:));
 
 V_RF = reshape(x,Nt,Nrf);
-V_U = inv(V_RF'*H1 * H1'* V_RF+ 1 * Vn *(V_RF)'*V_RF)*V_RF'*H1;
+
+for k = 1:Nk
+    V_U(:,:,k) = inv(V_RF'*H1(:,:,k) * H1(:,:,k)'* V_RF+  Vn(k) *(V_RF)'*V_RF)*V_RF'*H1(:,:,k);
+end

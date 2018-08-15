@@ -1,11 +1,10 @@
 function [x, cost] = conjugategradient(problem, x)
 
-options.minstepsize = 1e-5;
+options.minstepsize = 1e-3;
 options.maxiter = 20;
-options.tolgradnorm = 1e-5;
+options.tolgradnorm = 1e-3;
 options.storedepth = 2;
 options.beta_type = 'H-S';
-options.orth_value = Inf;
 options.linesearch = @linesearch_adaptive;
 
 % for convenience
@@ -76,26 +75,21 @@ while true
     
     % Powell's restart strategy (see page 12 of Hager and Zhang's
     % survey on conjugate gradient methods, for example)
-    if abs(orth_grads) >= options.orth_value,
-        beta = 0;
-        desc_dir = lincomb(x, -1, Pnewgrad);
-        
-    else % Compute the CG modification
-        
-        desc_dir = problem.M.transp(x, newx, desc_dir);
-        
-        diff = lincomb(newx, 1, newgrad, -1, oldgrad);
-        ip_diff = inner(newx, Pnewgrad, diff);
-        beta = ip_diff / inner(newx, diff, desc_dir);
-        beta = max(0, beta);
-        
-        desc_dir = lincomb(newx, -1, Pnewgrad, beta, desc_dir);
-    end
+    % Compute the CG modification
+    
+    desc_dir = problem.M.transp(x, newx, desc_dir);
+    
+    diff = lincomb(newx, 1, newgrad, -1, oldgrad);
+    ip_diff = inner(newx, Pnewgrad, diff);
+    beta = ip_diff / inner(newx, diff, desc_dir);
+    beta = max(0, beta);
+    
+    desc_dir = lincomb(newx, -1, Pnewgrad, beta, desc_dir);
     
     
     
     % Make sure we don't use too much memory for the store database.
-   % storedb = purgeStoredb(storedb, options.storedepth);
+    % storedb = purgeStoredb(storedb, options.storedepth);
     
     % Update iterate info
     x = newx;
