@@ -1,14 +1,14 @@
-function [V_RF, V_U, iter] = mo_algorithm(V_RF, Vn, H1)
+function [V_RF, V_U] = wwmo_algorithm(V_RF, Vn, H1, O)
 
 global manifold Ns Nk;
 [Nt, Nrf] = size(V_RF);
 V_U = zeros(Nrf,Ns,Nk);
 problem.M = manifold;
 
-problem.cost = @(x)MMSE_cost(x,H1,Vn);
-problem.egrad = @(x)MMSE_egrad(x,H1,Vn);
+problem.cost = @(x)wwMMSE_cost(x,H1,Vn,O);
+problem.egrad = @(x)wwMMSE_egrad(x,H1,Vn,O);
 
-[x, iter] = conjugategradient(problem,V_RF(:));
+[x] = conjugategradient(problem,V_RF(:));
 
 V_RF = reshape(x,Nt,Nrf);
 

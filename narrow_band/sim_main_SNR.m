@@ -9,15 +9,15 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-15);
+SNR_dB = (-35:5:0);
 
 %numbers of antennas, streams, RF chains, block
 global Nt Nr Ns Nrf Nsym;   %all functions can use these paras without passing
-Nt = 144;
-Nr = 36;
+Nt = 64;
+Nr = 64;
 
-Ns = 3;
-Nrf = 3;
+Ns = 2;
+Nrf = 2;
 Nsym = 64;
 
 global Metric;
@@ -27,7 +27,7 @@ Metric.mse = true;
 Metric.ber = true;
 
 global N_loop;
-N_loop = 10;   %iteration number
+N_loop = 100;   %iteration number
 
 % state noise power and channel as global variables to
 % avoid parameters passing
@@ -43,8 +43,8 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 %Algorithms, use cell to save different algorithms to run
 %Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'JZMO','MO'};
-Algorithms  = {'MMSE','MO','GEVD'};
-
+%Algorithms  = {'MMSE','Mrate','GEVD','WGEVD','WMO','MO','PE','Yuwei','JZMO'};
+Algorithms = {'Mrate','JZMO','PE'};
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
 
@@ -72,7 +72,7 @@ for snr_index = 1 : length(SNR_dB)
         
         % generate channel matrix, codebooks for OMP
         [H ,Codebook_v, Codebook_w]  = OMPH(Nt,Nr);
-       % H = JZH(:,:,n);
+        %H = JZH(:,:,n);
         
         %run different algorithms
         for i = 1:length(Algorithms)

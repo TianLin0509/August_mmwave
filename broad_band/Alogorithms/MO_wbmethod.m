@@ -25,14 +25,14 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while (trigger > 1e-4 && n<10)
+while (trigger > 1e-3 && n<10)
     
     % precoding
     Vn1 = Vn * w;
     for i = 1: Nk
         H1(:,:,i) = H(:,:,i)'*W_equal(:,:,i);
     end
-    [V_RF, V_U] = mo_algorithm(V_RF, Vn1, H1);
+    [V_RF, V_U, iter] = mo_algorithm(V_RF, Vn1, H1);
     
      for i = 1:Nk
         V_equal(:,:,i) = V_RF * V_U(:,:,i);
@@ -68,6 +68,7 @@ obj.V_B = V_B;
 obj.W_B = W_B;
 obj.V_RF = V_RF;
 obj.W_RF = W_RF;
+obj.iter = obj.iter + iter;
 obj = get_wbmetric(obj);
 
 

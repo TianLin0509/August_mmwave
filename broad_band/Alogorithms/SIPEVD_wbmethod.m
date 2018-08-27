@@ -1,4 +1,4 @@
-function obj = EVD_wbmethod(obj)
+function obj = SIPEVD_wbmethod(obj)
 
 global H W_mopt Nk Nt Nr  Ns Vn;
 t1 = clock;
@@ -20,13 +20,13 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while ( trigger > 1e-4 && n<10)
+while (trigger > 1e-3 && n<10)
     
     Vn1 = Vn * w;
     for i = 1: Nk
         H1(:,:,i) = H(:,:,i)'*W_equal(:,:,i);
     end
-    [V_RF,V_U] = EVD_method(H1,Vn1);
+    [V_RF,V_U] = SIPEVD_method(H1,Vn1);
     
     for i = 1:Nk
         V_equal(:,:,i) = V_RF * V_U(:,:,i);
@@ -34,7 +34,7 @@ while ( trigger > 1e-4 && n<10)
         H2(:,:,i) = H(:,:,i)*V_equal(:,:,i);
     end
     Vn2 = Vn * v;
-    [W_RF,W_B] = EVD_method(H2,Vn2);
+    [W_RF,W_B] = SIPEVD_method(H2,Vn2);
     
     m_MSE_old = m_MSE_new;
     
@@ -61,5 +61,6 @@ obj.W_B = W_B;
 obj.V_RF = V_RF;
 obj.W_RF = W_RF;
 obj.runtime = obj.runtime + runtime;
+obj.iter = obj.iter + n;
 obj = get_wbmetric(obj);
 

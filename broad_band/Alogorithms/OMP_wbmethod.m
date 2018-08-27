@@ -1,6 +1,6 @@
-function obj = EVD_wbmethod(obj)
+function [obj] = OMP_wbmethod(obj)
 
-global H W_mopt Nk Nt Nr  Ns Vn;
+global H W_mopt Nk Nt Nr  Ns Vn Codebook_v Codebook_w;
 t1 = clock;
 n = 0;
 w = zeros(Nk,1);
@@ -10,6 +10,7 @@ W_equal = W_mopt;
 V_equal = zeros(Nt,Ns,Nk);
 H_equal = zeros(Ns,Ns,Nk);
 m_mse = zeros(Nk,1);
+
 for i = 1:Nk
     w(i) = trace(W_equal(:,:,i)'*W_equal(:,:,i));
 end
@@ -19,14 +20,14 @@ H2 = zeros(Nr,Ns,Nk);
 trigger = 1;
 m_MSE_new = 100;
 
-%limit the iterations number by i<10
-while ( trigger > 1e-4 && n<10)
+
+while (trigger > 1e-3 && n<10)
     
     Vn1 = Vn * w;
     for i = 1: Nk
         H1(:,:,i) = H(:,:,i)'*W_equal(:,:,i);
     end
-    [V_RF,V_U] = EVD_method(H1,Vn1);
+    [V_RF,V_U] = OMP_alg(H1,Codebook_v,Vn1);
     
     for i = 1:Nk
         V_equal(:,:,i) = V_RF * V_U(:,:,i);
@@ -34,7 +35,7 @@ while ( trigger > 1e-4 && n<10)
         H2(:,:,i) = H(:,:,i)*V_equal(:,:,i);
     end
     Vn2 = Vn * v;
-    [W_RF,W_B] = EVD_method(H2,Vn2);
+    [W_RF,W_B] = OMP_alg(H2,Codebook_w,Vn2);
     
     m_MSE_old = m_MSE_new;
     
@@ -61,5 +62,5 @@ obj.W_B = W_B;
 obj.V_RF = V_RF;
 obj.W_RF = W_RF;
 obj.runtime = obj.runtime + runtime;
+obj.iter = obj.iter + n;
 obj = get_wbmetric(obj);
-

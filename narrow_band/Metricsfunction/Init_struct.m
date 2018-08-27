@@ -13,3 +13,4 @@ obj.Rate = 0;
 obj.Mse = 0;
 obj.Ber = 0;
 obj.runtime = 0;
+obj.iter = 0;

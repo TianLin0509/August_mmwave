@@ -1,7 +1,7 @@
 function [x, cost] = conjugategradient(problem, x)
 
 options.minstepsize = 1e-5;
-options.maxiter = 20;
+options.maxiter = 60;
 options.tolgradnorm = 1e-5;
 options.storedepth = 2;
 options.beta_type = 'H-S';
