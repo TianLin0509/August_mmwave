@@ -29,7 +29,7 @@ for i = 1:Nk
     O(:,:,i) = eye(Ns);
 end
 %limit the iterations number by i<10
-while (  trigger > 1e-4 && n<10)
+while (  trigger > 1e-3 && n<10)
     
      Vn1 = Vn * v;
     for i = 1: Nk
@@ -79,3 +79,4 @@ obj.V_RF = V_RF;
 obj.W_RF = W_RF;
 obj.runtime = obj.runtime + runtime;
 obj = get_wbmetric(obj);
+obj.outer  = obj.outer + n;

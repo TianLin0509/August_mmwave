@@ -15,3 +15,4 @@ obj.Ber = 0;
 obj.iter = 0;
 obj.qber = 0;
 obj.runtime = 0;
+obj.outer = 0;

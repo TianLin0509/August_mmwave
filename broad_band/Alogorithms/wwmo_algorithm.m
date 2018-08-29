@@ -8,7 +8,7 @@ problem.M = manifold;
 problem.cost = @(x)wwMMSE_cost(x,H1,Vn,O);
 problem.egrad = @(x)wwMMSE_egrad(x,H1,Vn,O);
 
-[x] = conjugategradient(problem,V_RF(:));
+[x, cost, iter] = conjugategradient(problem,V_RF(:));
 
 V_RF = reshape(x,Nt,Nrf);
 

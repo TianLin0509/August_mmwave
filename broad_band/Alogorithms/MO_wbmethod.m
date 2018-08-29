@@ -70,6 +70,7 @@ obj.V_RF = V_RF;
 obj.W_RF = W_RF;
 obj.iter = obj.iter + iter;
 obj = get_wbmetric(obj);
+obj.outer  = obj.outer + n;
 
 
 
