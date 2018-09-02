@@ -1,4 +1,4 @@
-function simulation_plot(Data, vec, Algorithms)
+function [Sim_Rate, Sim_Mse, Sim_Ber] = simulation_plot(Data, vec, Algorithms)
 % function for plotting figures
 % Data is a cell containing all the results
 % vec is the x axis vector

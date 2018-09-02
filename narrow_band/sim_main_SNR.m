@@ -9,22 +9,22 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-24:3:-12);
+SNR_dB = (-21:3:-12);
 
 %numbers of antennas, streams, RF chains, block
 global Nt Nr Ns Nrf Nsym;   %all functions can use these paras without passing
-Nt = 64;
-Nr = 64;
+Nt = 144;
+Nr = 36;
 
-Ns = 2;
-Nrf = 2;
+Ns = 3;
+Nrf = 3;
 Nsym = 64;
 
 global Metric;
 %set the metric you want to get, now only support rate,mse and ber.
-Metric.rate = true;
-Metric.mse = true;
-Metric.ber = true;
+Metric.rate = 1;
+Metric.mse = 1;
+Metric.ber = 1;
 
 global N_loop;
 N_loop = 1000;   %iteration number
@@ -42,9 +42,9 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 
 %Algorithms, use cell to save different algorithms to run
-%Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','PE' ,'JZMO','MO'};
-Algorithms  = {'MMSE','Mrate','GEVD','WGEVD','WMO','MO','PE','Yuwei','JZMO'};
-%Algorithms = {'MMSE','GEVD','OMP'};
+Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','JZMO','MO','OMP'};
+%Algorithms  = {'MMSE','Mrate','GEVD','WGEVD','WMO','MO','PE','Yuwei','JZMO'};
+Algorithms = {'MMSE','OMP'};
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
 
@@ -66,7 +66,7 @@ fprintf('params: \n Nt: %d  Nr: %d  Ns: %d N_loop: %d Nrf: %d \n SNR: %d : %d \n
 
 for snr_index = 1 : length(SNR_dB)
     
-    if (SNR_dB(snr_index) > -16)
+    if (SNR_dB(snr_index) > -15)
         N_loop = 10000;
     end
     
@@ -99,6 +99,6 @@ for snr_index = 1 : length(SNR_dB)
 end
 
 %plot figures for different metrics
-%simulation_plot(total_datas,SNR_dB, Algorithms);
+%[Total_Rate, Total_Mse, Total_Ber] = simulation_plot(total_datas,SNR_dB, Algorithms);
 
 

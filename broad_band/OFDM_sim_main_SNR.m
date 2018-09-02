@@ -8,15 +8,15 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-28:3:-12);
+SNR_dB = (-27:3:-9);
 
 %numbers of antennas, streams, RF chains, sub_carriers
 global Nt Nr Ns Nrf  Nk;   %all functions can use these paras without passing
 Nt = 64;
-Nr = 64;
+Nr =64;
 
 Ns = 2;
-Nrf = 4;
+Nrf = 2;
 Nk = 64;
 
 global Metric;
@@ -43,8 +43,8 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 %Algorithms, use cell to save different algorithms to run
 %Algorithms = { 'MMSE','Mrate','SIPEVD','WMO','Yuwei','JZMO','MO'};
-%Algorithms  = {'MMSE','EVD','OMP'};
-Algorithms = { 'MMSE','Mrate','SIPEVD','Yuwei','JZMO','MO'};
+%Algorithms  = {'MMSE','Mrate','EVD','SIPEVD'};
+Algorithms = { 'MMSE','Mrate','SIPEVD','Yuwei','JZMO','MO','WMO'};
 
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
@@ -67,7 +67,9 @@ fprintf('params: \n Nt: %d  Nr: %d  Ns: %d N_loop: %d Nrf: %d \n SNR: %d : %d \n
 for snr_index = 1 : length(SNR_dB)
     Vn = 1 / 10^(SNR_dB(snr_index)/10);   % Noise Power
     t1 = clock;
-    
+    if (SNR_dB(snr_index) > -15)
+        N_loop = 2000;
+    end
     for  n = 1 : N_loop
         
         % generate channel matrix, codebooks for OMP
