@@ -86,7 +86,7 @@ for snr_index = 1 : length(SNR_dB)
         end
     end
     
-    
+    disp (['Now SNR:', num2str(SNR_dB(snr_index))]);
     for i = 1:length(Algorithms)
         eval([Algorithms{i},'=Show(',Algorithms{i},');']);
         eval(['total_datas{snr_index,i}=',Algorithms{i},';']);

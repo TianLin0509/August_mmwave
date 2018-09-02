@@ -1,30 +1,30 @@
 % mmwave_ general simluation world
 % for different algorithms, parameters, channels and metrics
-% Author : Lin Tian    2018. 08. 09 for paper revision
-% this one is for easier case narrowband, but can be extended to
-% broadband easily.
+% Author : Lin Tian    2018. 08. 11 for paper revision
+% this one is for broadband case.
 
 clear all;  close all; clc;
 disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-24:2:-10);
+SNR_dB = (-27:3:-12);
 
-%numbers of antennas, streams, RF chains, block
-global Nt Nr Ns Nrf Nsym;   %all functions can use these paras without passing
+%numbers of antennas, streams, RF chains, sub_carriers
+global Nt Nr Ns Nrf  Nk;   %all functions can use these paras without passing
 Nt = 64;
-Nr = 64;
+Nr =32;
 
 Ns = 2;
-Nrf = 2;
-Nsym = 64;
+Nrf = 4;
+Nk = 64;
 
 global Metric;
 %set the metric you want to get, now only support rate,mse and ber.
 Metric.rate = 1;
-Metric.mse = 1;
+Metric.mse = 0;
 Metric.ber = 1;
+Metric.qber = 0;  %quantiazed analog beamformer
 
 global N_loop;
 N_loop = 1000;   %iteration number
@@ -42,9 +42,10 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 
 
 %Algorithms, use cell to save different algorithms to run
-Algorithms = { 'MMSE','Mrate','GEVD','Yuwei','JZMO','MO','OMP'};
-%Algorithms  = {'MMSE','Mrate','GEVD','WGEVD','WMO','MO','PE','Yuwei','JZMO'};
-%Algorithms = {'MMSE','OMP'};
+%Algorithms = { 'MMSE','Mrate','SIPEVD','WMO','Yuwei','JZMO','MO'};
+%Algorithms  = {'MMSE','Mrate','EVD','SIPEVD'};
+Algorithms = { 'MMSE','Mrate','SIPEVD','Yuwei','JZMO','MO','WMO'};
+
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
 
@@ -59,29 +60,25 @@ manifold = complexcirclefactory(Nt*Nrf);
 
 %fixed channel
 %H_fixed = gen_H(Nt,Nr,N_loop);
-%load('JZH.mat')
 
 fprintf('params: \n Nt: %d  Nr: %d  Ns: %d N_loop: %d Nrf: %d \n SNR: %d : %d \n',...
     Nt,Nr,Ns,N_loop,Nrf,SNR_dB(1),SNR_dB(end));
 
 for snr_index = 1 : length(SNR_dB)
-    
-    if (SNR_dB(snr_index) > -15)
-        N_loop =5000;
-    end
-    
     Vn = 1 / 10^(SNR_dB(snr_index)/10);   % Noise Power
     t1 = clock;
-    
+    if (SNR_dB(snr_index) > -15)
+        N_loop = 2000;
+    end
     for  n = 1 : N_loop
         
         % generate channel matrix, codebooks for OMP
-        [H ,Codebook_v, Codebook_w]  = OMPH(Nt,Nr);
-        %H = JZH(:,:,n);
+        [H ,Codebook_v, Codebook_w]  = OMPHWB(Nt,Nr);
+        %H = H_fixed(:,:,n);
         
         %run different algorithms
         for i = 1:length(Algorithms)
-            eval([Algorithms{i},'=',Algorithms{i},'_method(',Algorithms{i},');']);
+            eval([Algorithms{i},'=',Algorithms{i},'_wbmethod(',Algorithms{i},');']);
         end
         
         if (n==10)
@@ -89,16 +86,17 @@ for snr_index = 1 : length(SNR_dB)
         end
     end
     
-    
+    disp (['Now SNR:', num2str(SNR_dB(snr_index))]);
     for i = 1:length(Algorithms)
         eval([Algorithms{i},'=Show(',Algorithms{i},');']);
         eval(['total_datas{snr_index,i}=',Algorithms{i},';']);
     end
     
+    
     disp(datestr(now));
 end
 
 %plot figures for different metrics
-%[Total_Rate, Total_Mse, Total_Ber] = simulation_plot(total_datas,SNR_dB, Algorithms);
+simulation_plot(total_datas,SNR_dB, Algorithms);
 
 
