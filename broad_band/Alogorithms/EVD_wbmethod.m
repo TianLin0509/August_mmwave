@@ -1,12 +1,16 @@
 function obj = EVD_wbmethod(obj)
 
-global H W_mopt Nk Nt Nr  Ns Vn;
+global H W_mopt Nk Nt Nr  Ns Vn ifVFD n;
 t1 = clock;
-n = 0;
+j = 0;
 w = zeros(Nk,1);
 v = zeros(Nk,1);
 %init
-W_equal = W_mopt;
+if (ifVFD)
+    W_equal = W_mopt;
+else
+    W_equal = exp( 1i*unifrnd(0,2*pi,Nr,Ns,Nk) );
+end
 V_equal = zeros(Nt,Ns,Nk);
 H_equal = zeros(Ns,Ns,Nk);
 m_mse = zeros(Nk,1);
@@ -20,7 +24,7 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while ( trigger > 1e-4 && n<10)
+while ( trigger > 1e-4 && j<10)
     
     Vn1 = Vn * w;
     for i = 1: Nk
@@ -40,14 +44,15 @@ while ( trigger > 1e-4 && n<10)
     
     for k = 1:Nk
         W_equal(:,:,k) = W_RF * W_B(:,:,k);
-        w(i) = trace(W_equal(:,:,i)'*W_equal(:,:,i));
+        w(k) = trace(W_equal(:,:,k)'*W_equal(:,:,k));
         H_equal(:,:,k) = W_equal(:,:,k)'*H2(:,:,k);
         m_mse(k) = trace(H_equal(:,:,k) * H_equal(:,:,k)' - H_equal(:,:,k) - H_equal(:,:,k)')...
             + Vn * v(k) * w(k);
     end
     m_MSE_new = sum(m_mse)/Nk;
     trigger = m_MSE_old - m_MSE_new;
-    n = n + 1;
+    j = j + 1;
+    obj.modmse(j,n) = m_MSE_new + Ns;
 end
 
 for i = 1:Nk

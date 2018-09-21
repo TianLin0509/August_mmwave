@@ -19,7 +19,7 @@ else
 end
 
 if (Metric.rate)
-    obj.rate(n) = get_wbrate(V_equal, W_equal);
+    [obj.rate(n),obj.A(:,n)] = get_wbrate(V_equal, W_equal);  
 end
 
 if (Metric.mse)
@@ -27,8 +27,10 @@ if (Metric.mse)
 end
 
 if (Metric.ber)
-    obj.ber(n) = get_wbber(V_equal, W_equal);
+    [obj.ber(n),obj.suberror(:,n)] = get_wbber(V_equal, W_equal);
 end
+
+
 
 
 if (Metric.qber)

@@ -1,6 +1,6 @@
 function obj  = Yuwei_wbmethod(obj)
 
-global Nk H Ns Vn;
+global Nk H Ns Vn n;
 t1 = clock;
 V_RF = yuweiA1();
 Q = (V_RF'*V_RF);
@@ -31,5 +31,9 @@ obj.W_B = W_D;
 obj.V_RF = V_RF;
 obj.W_RF = W_RF;
 obj = get_wbmetric(obj);
-    
+% if (obj.ber(n)>30)
+%     save H 
+%     pause
+% end
+   a= 1;
     

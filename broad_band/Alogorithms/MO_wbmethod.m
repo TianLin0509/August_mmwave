@@ -1,13 +1,17 @@
 function obj = MO_wbmethod(obj)
 
-global  H  Vn W_mopt Nt  Nrf Nr Nk Ns;
+global  H  Vn W_mopt Nt  Nrf Nr Nk Ns ifVFD W_rand n;
 t1 = clock;
-n = 0;
+j = 0;
 
 w = zeros(Nk,1);
 v = zeros(Nk,1);
 %init
-W_equal = W_mopt;
+if (ifVFD)
+    W_equal = W_mopt;
+else
+   W_equal = exp( 1i*unifrnd(0,2*pi,Nr,Ns,Nk) );
+end
 V_equal = zeros(Nt,Ns,Nk);
 H_equal = zeros(Ns,Ns,Nk);
 m_mse = zeros(Nk,1);
@@ -25,7 +29,7 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while (trigger > 1e-3 && n<10)
+while (trigger > 1e-5 && j<10)
     
     % precoding
     Vn1 = Vn * w;
@@ -34,28 +38,29 @@ while (trigger > 1e-3 && n<10)
     end
     [V_RF, V_U, iter] = mo_algorithm(V_RF, Vn1, H1);
     
-     for i = 1:Nk
+    for i = 1:Nk
         V_equal(:,:,i) = V_RF * V_U(:,:,i);
         v(i) = trace(V_equal(:,:,i)'*V_equal(:,:,i));
         H2(:,:,i) = H(:,:,i)*V_equal(:,:,i);
-     end
+    end
     
     %combining
     Vn2 = Vn * v;
     [W_RF, W_B] = mo_algorithm(W_RF, Vn2, H2);
     
-     m_MSE_old = m_MSE_new;
+    m_MSE_old = m_MSE_new;
     
     for k = 1:Nk
         W_equal(:,:,k) = W_RF * W_B(:,:,k);
-        w(i) = trace(W_equal(:,:,i)'*W_equal(:,:,i));
+        w(k) = trace(W_equal(:,:,k)'*W_equal(:,:,k));
         H_equal(:,:,k) = W_equal(:,:,k)'*H2(:,:,k);
         m_mse(k) = trace(H_equal(:,:,k) * H_equal(:,:,k)' - H_equal(:,:,k) - H_equal(:,:,k)')...
             + Vn * v(k) * w(k);
     end
     m_MSE_new = sum(m_mse)/Nk;
     trigger = m_MSE_old - m_MSE_new;
-    n = n + 1;
+    j = j + 1;
+    obj.modmse(j,n) = m_MSE_new + Ns;
 end
 
 for i = 1:Nk
@@ -70,7 +75,7 @@ obj.V_RF = V_RF;
 obj.W_RF = W_RF;
 obj.iter = obj.iter + iter;
 obj = get_wbmetric(obj);
-obj.outer  = obj.outer + n;
+obj.outer  = obj.outer + j;;
 
 
 

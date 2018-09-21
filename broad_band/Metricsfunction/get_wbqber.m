@@ -7,6 +7,7 @@ W_RF = quantizeRF(obj.W_RF,qbit);
 
 for k = 1:Nk
     V_equal(:,:,k) = V_RF * obj.V_B(:,:,k);
+     V_equal(:,:,k) =  V_equal(:,:,k)/norm( V_equal(:,:,k),'fro');
     W_equal(:,:,k) = W_RF * obj.W_B(:,:,k);
 end
 

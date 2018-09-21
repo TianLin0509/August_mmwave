@@ -16,3 +16,4 @@ obj.iter = 0;
 obj.qber = 0;
 obj.runtime = 0;
 obj.outer = 0;
+obj.modmse = 0;

@@ -1,4 +1,4 @@
-function ber = get_wbber(V_equal, W_equal)
+function [ber,suberror] = get_wbber(V_equal, W_equal)
 
 global Ns Nk Nr Vn H hMod hDemod;
 
@@ -15,3 +15,12 @@ end
 
 de_data = step(hDemod, r(:));
 ber = biterr(data,de_data);
+
+for i = 1:Nk
+    a = de_data(4*(i-1) + 1: (4*i));
+    b = data(4*(i-1) + 1: (4*i));
+    suberror(i) = biterr(a,b);
+end
+
+
+    

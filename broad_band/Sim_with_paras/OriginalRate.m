@@ -8,7 +8,7 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-27:3:-9);
+SNR_dB = (-9);
 
 %numbers of antennas, streams, RF chains, sub_carriers
 global Nt Nr Ns Nrf  Nk;   %all functions can use these paras without passing
@@ -27,12 +27,12 @@ Metric.ber = 0;
 Metric.qber = 0;  %quantiazed analog beamformer
 
 global N_loop n;
-N_loop = 1000;   %iteration number
+N_loop = 100;   %iteration number
 
 % state noise power and channel as global variables to
 % avoid parameters passing
 
-global Vn H;
+global Vn H Codebook_v Codebook_w;
 
 %using QPSK modulation
 global hMod hDemod;
@@ -44,7 +44,8 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 %Algorithms, use cell to save different algorithms to run
 %Algorithms = { 'MMSE','Mrate','SIPEVD','WMO','Yuwei','JZMO','MO'};
 %Algorithms  = {'MMSE','Mrate','EVD','SIPEVD'};
-Algorithms = { 'MMSE','Mrate','SIPEVD','Yuwei','JZMO','MO','WMO'};
+%Algorithms = { 'MMSE','Mrate','SIPEVD','Yuwei','JZMO','MO','WMO'};
+Algorithms = {'MMSE','Mrate','MO','WMO'};
 
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
@@ -93,6 +94,7 @@ for snr_index = 1 : length(SNR_dB)
 end
 
 %plot figures for different metrics
-simulation_plot(total_datas,SNR_dB, Algorithms);
+[Sim_Rate, Sim_Mse, Sim_Ber] = simulation_plot(total_datas,SNR_dB, Algorithms);
+
 
 

@@ -1,8 +1,8 @@
 function [x, cost] = conjugategradient(problem, x)
 
-options.minstepsize = 1e-5;
+options.minstepsize = 1e-6;
 options.maxiter = 60;
-options.tolgradnorm = 1e-5;
+options.tolgradnorm = 1e-6;
 options.storedepth = 2;
 options.beta_type = 'H-S';
 options.orth_value = Inf;

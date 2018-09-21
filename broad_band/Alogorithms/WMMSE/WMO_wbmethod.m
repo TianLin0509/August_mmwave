@@ -29,7 +29,7 @@ for i = 1:Nk
     O(:,:,i) = eye(Ns);
 end
 %limit the iterations number by i<10
-while (  trigger > 1e-3 && n<10)
+while (  trigger > 1e-5 && n<10)
     
      Vn1 = Vn * v;
     for i = 1: Nk

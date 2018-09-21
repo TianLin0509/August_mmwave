@@ -8,7 +8,7 @@ disp(datestr(now));
 
 % set up simulation parameters;
 %this .m is for BER,MSE,rate v.s. SNR
-SNR_dB = (-27:3:-12);
+SNR_dB = (-12);
 
 %numbers of antennas, streams, RF chains, sub_carriers
 global Nt Nr Ns Nrf  Nk;   %all functions can use these paras without passing
@@ -27,7 +27,7 @@ Metric.ber = 1;
 Metric.qber = 0;  %quantiazed analog beamformer
 
 global N_loop;
-N_loop = 1000;   %iteration number
+N_loop = 100;   %iteration number
 
 % state noise power and channel as global variables to
 % avoid parameters passing
@@ -44,7 +44,7 @@ hDemod = comm.PSKDemodulator('ModulationOrder',4,'BitOutput',true,'PhaseOffset',
 %Algorithms, use cell to save different algorithms to run
 %Algorithms = { 'MMSE','Mrate','SIPEVD','WMO','Yuwei','JZMO','MO'};
 %Algorithms  = {'MMSE','Mrate','EVD','SIPEVD'};
-Algorithms = { 'MMSE','Mrate','SIPEVD','Yuwei','JZMO','MO','WMO'};
+Algorithms = { 'MMSE','Yuwei'};
 
 %simulation results cell
 total_datas = cell(length(SNR_dB),length(Algorithms));
@@ -68,14 +68,14 @@ for snr_index = 1 : length(SNR_dB)
     Vn = 1 / 10^(SNR_dB(snr_index)/10);   % Noise Power
     t1 = clock;
     if (SNR_dB(snr_index) > -15)
-        N_loop = 2000;
+        N_loop = 100;
     end
     for  n = 1 : N_loop
         
         % generate channel matrix, codebooks for OMP
         [H ,Codebook_v, Codebook_w]  = OMPHWB(Nt,Nr);
         %H = H_fixed(:,:,n);
-        
+        load('H.mat')
         %run different algorithms
         for i = 1:length(Algorithms)
             eval([Algorithms{i},'=',Algorithms{i},'_wbmethod(',Algorithms{i},');']);
@@ -97,6 +97,6 @@ for snr_index = 1 : length(SNR_dB)
 end
 
 %plot figures for different metrics
-simulation_plot(total_datas,SNR_dB, Algorithms);
+[Sim_Rate, Sim_Mse, Sim_Ber] = simulation_plot(total_datas,SNR_dB, Algorithms);
 
 

@@ -14,12 +14,12 @@ trigger = 1;
 m_MSE_new = 100;
 
 %limit the iterations number by i<10
-while (trigger > 1e-3 && i<6)
+while (trigger > 1e-5)
     
     % precoding
     H1 = H' * W_equal;
     Vn1 = Vn * w;
-    [V_RF, V_U, iter] = mo_algorithm(V_RF, Vn1, H1);
+    [V_RF, V_U] = mo_algorithm(V_RF, Vn1, H1);
     V_equal = V_RF *V_U;
     v = trace (V_equal * V_equal');   %beta^(-2)
     
@@ -47,7 +47,7 @@ obj.V_B = V_B;
 obj.W_B = W_B;
 obj.V_RF = V_RF;
 obj.W_RF = W_RF;
-obj.iter = obj.iter + iter;
+obj.iter = obj.iter + i;
 obj = get_metric(obj);
 
 

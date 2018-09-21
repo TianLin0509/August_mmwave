@@ -1,8 +1,8 @@
 function [x, cost, iter] = conjugategradient(problem, x)
 
-options.minstepsize = 1e-3;
-options.maxiter = 20;
-options.tolgradnorm = 1e-3;
+options.minstepsize = 1e-5;
+options.maxiter = 100;
+options.tolgradnorm = 1e-5;
 options.storedepth = 2;
 options.beta_type = 'H-S';
 options.linesearch = @linesearch_adaptive;
