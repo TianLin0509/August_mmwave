@@ -16,7 +16,7 @@ SNR_dB = -20;
 global Nt Nr Ns Nrf Nsym;   %all functions can use these paras without passing
 Nt = 64;
 Nr = 64;
-
+ss
 Ns = 4;
 Nsym = 64;
 
